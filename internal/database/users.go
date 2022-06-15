@@ -14,11 +14,7 @@ type User struct {
 	Age       int       `json:"age"`
 }
 
-// CreateUser We're using email as a primary key, that is, we can't have two users with the same email.
-// If you look at the databaseSchema struct you'll notice that the Users field is a map: map[string]User.
-// The string key in the map will be the user's email.
-// This function should read the current state of the database, create a new user struct, add it to the Users map in the schema, then update the data on disk.
-// Don't forget to set the CreatedAt field to time.Now().UTC().
+// CreateUser -
 func (c Client) CreateUser(email, password, name string, age int) (User, error) {
 	db, err := c.readDB()
 	if err != nil {
@@ -36,6 +32,7 @@ func (c Client) CreateUser(email, password, name string, age int) (User, error) 
 		Name:      name,
 		Age:       age,
 	}
+
 	db.Users[email] = user
 
 	err = c.updateDB(db)
@@ -94,5 +91,9 @@ func (c Client) DeleteUser(email string) error {
 		return fmt.Errorf("user doesn't exist")
 	}
 	delete(db.Users, email)
+	err = c.updateDB(db)
+	if err != nil {
+		return err
+	}
 	return nil
 }

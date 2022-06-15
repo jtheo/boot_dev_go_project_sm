@@ -2,17 +2,13 @@ package database
 
 import (
 	"encoding/json"
-	"fmt"
+	"errors"
 	"os"
-	"time"
 )
 
+// Client -
 type Client struct {
-	path string
-}
-
-func NewClient(path string) Client {
-	return Client{path: path}
+	dbPath string
 }
 
 type databaseSchema struct {
@@ -20,63 +16,55 @@ type databaseSchema struct {
 	Posts map[string]Post `json:"posts"`
 }
 
-// Post -
-type Post struct {
-	ID        string    `json:"id"`
-	CreatedAt time.Time `json:"createdAt"`
-	UserEmail string    `json:"userEmail"`
-	Text      string    `json:"text"`
+// NewClient -
+func NewClient(dbPath string) Client {
+	return Client{
+		dbPath: dbPath,
+	}
+}
+
+// EnsureDB creates the database file if it doesn't exist
+func (c Client) EnsureDB() error {
+	_, err := os.ReadFile(c.dbPath)
+	if errors.Is(err, os.ErrNotExist) {
+		return c.createDB()
+	}
+	return err
 }
 
 func (c Client) createDB() error {
-	d := databaseSchema{}
-
-	payload, err := json.Marshal(d)
+	dat, err := json.Marshal(databaseSchema{
+		Users: make(map[string]User),
+		Posts: make(map[string]Post),
+	})
 	if err != nil {
-		return fmt.Errorf("error marshaling the new DB %v", err)
+		return err
 	}
-
-	err = os.WriteFile(c.path, payload, 0600)
+	err = os.WriteFile(c.dbPath, dat, 0600)
 	if err != nil {
-		return fmt.Errorf("problem opening the file %s: %v", c.path, err)
-	}
-
-	return nil
-}
-
-func (c Client) EnsureDB() error {
-	_, err := os.ReadFile(c.path)
-	if err != nil {
-		err = c.createDB()
-		if err != nil {
-			return fmt.Errorf("error opening %s", c.path)
-		}
+		return err
 	}
 	return nil
 }
 
 func (c Client) updateDB(db databaseSchema) error {
-	payload, err := json.Marshal(db)
+	dat, err := json.Marshal(db)
 	if err != nil {
-		return fmt.Errorf("error marshaling the new DB %v", err)
+		return err
 	}
-
-	err = os.WriteFile(c.path, payload, 0600)
+	err = os.WriteFile(c.dbPath, dat, 0600)
 	if err != nil {
-		return fmt.Errorf("problem opening the file %s: %v", c.path, err)
+		return err
 	}
 	return nil
 }
 
 func (c Client) readDB() (databaseSchema, error) {
-	payload, err := os.ReadFile(c.path)
+	dat, err := os.ReadFile(c.dbPath)
 	if err != nil {
-		return databaseSchema{}, fmt.Errorf("error opening %s", c.path)
+		return databaseSchema{}, err
 	}
-
 	db := databaseSchema{}
-
-	err = json.Unmarshal(payload, &db)
-
-	return db, fmt.Errorf("unmarshalDB: %v", err)
+	err = json.Unmarshal(dat, &db)
+	return db, err
 }
