@@ -5,19 +5,24 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/jtheo/socialmedia/internal/database"
 )
 
 func main() {
-
 	const addr = "localhost:8080"
+
+	c := database.NewClient("./db.json")
+	c.EnsureDB()
+	apiCfg := apiConfig{dbClient: c}
+
 	log.Println("Starting", addr)
 	serveMux := http.NewServeMux()
 	serveMux.HandleFunc("/", testHandler)
-	serveMux.HandleFunc("/err", testErrHandler)
+
+	serveMux.HandleFunc("/users", apiCfg.endpointUsersHandler)
+	serveMux.HandleFunc("/users/", apiCfg.endpointUsersHandler)
 	srv := http.Server{
 		Handler:      serveMux,
 		Addr:         addr,
@@ -56,7 +61,7 @@ func respondWithError(w http.ResponseWriter, code int, err error) {
 		log.Println("don't call respondWithError with a nil err!")
 		return
 	}
-	log.Println(err)
+	// log.Println(err)
 	respondWithJSON(w, code, errorBody{
 		Error: err.Error(),
 	})
@@ -64,15 +69,4 @@ func respondWithError(w http.ResponseWriter, code int, err error) {
 
 type errorBody struct {
 	Error string `json:"error"`
-}
-
-func testErrHandler(w http.ResponseWriter, r *http.Request) {
-	code := 599
-	keys, ok := r.URL.Query()["err"]
-	if ok {
-		code, _ = strconv.Atoi(keys[0])
-	}
-
-	err := fmt.Sprintf("the error code is %v", code)
-	respondWithError(w, code, fmt.Errorf(err))
 }
