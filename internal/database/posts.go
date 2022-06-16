@@ -51,7 +51,9 @@ func (c Client) GetPosts(userEmail string) ([]Post, error) {
 	posts := []Post{}
 
 	for _, p := range db.Posts {
+		fmt.Printf("p.UserEmail >%s< | userEmail >%s< | equal %v\n", p.UserEmail, userEmail, p.UserEmail == userEmail)
 		if p.UserEmail == userEmail {
+
 			posts = append(posts, p)
 		}
 	}

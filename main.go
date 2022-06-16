@@ -10,6 +10,10 @@ import (
 	"github.com/jtheo/socialmedia/internal/database"
 )
 
+type apiConfig struct {
+	dbClient database.Client
+}
+
 func main() {
 	const addr = "localhost:8080"
 

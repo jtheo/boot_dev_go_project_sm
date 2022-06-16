@@ -1,1 +1,6 @@
 db.json
+db.json.*
+
+sandbox/*
+sandbox
+sandbox/

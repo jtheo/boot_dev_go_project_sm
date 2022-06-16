@@ -6,13 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
-
-	"github.com/jtheo/socialmedia/internal/database"
 )
-
-type apiConfig struct {
-	dbClient database.Client
-}
 
 func (apiCfg apiConfig) endpointUsersHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
@@ -37,6 +31,7 @@ func (apiCfg apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Request
 		Name     string `json:"name"`
 		Age      int    `json:"age"`
 	}
+
 	decoder := json.NewDecoder(r.Body)
 	params := parameters{}
 	err := decoder.Decode(&params)
@@ -104,23 +99,4 @@ func (apiCfg apiConfig) handlerUpdateUser(w http.ResponseWriter, r *http.Request
 	log.Println(http.StatusOK, user)
 
 	respondWithJSON(w, http.StatusOK, user)
-}
-
-func (apiCfg apiConfig) handlerCreatePost(w http.ResponseWriter, r *http.Request) {
-
-}
-
-func (apiCfg apiConfig) endpointPostHandler(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodGet:
-		apiCfg.handlerGetUser(w, r)
-	case http.MethodPost:
-		apiCfg.handlerCreateUser(w, r)
-	case http.MethodPut:
-		apiCfg.handlerUpdateUser(w, r)
-	case http.MethodDelete:
-		apiCfg.handlerDeleteUser(w, r)
-	default:
-		respondWithError(w, 404, errors.New("method not supported"))
-	}
 }
