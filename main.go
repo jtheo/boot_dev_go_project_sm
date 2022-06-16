@@ -23,6 +23,9 @@ func main() {
 
 	serveMux.HandleFunc("/users", apiCfg.endpointUsersHandler)
 	serveMux.HandleFunc("/users/", apiCfg.endpointUsersHandler)
+
+	serveMux.HandleFunc("/posts", apiCfg.endpointPostHandler)
+	serveMux.HandleFunc("/posts/", apiCfg.endpointPostHandler)
 	srv := http.Server{
 		Handler:      serveMux,
 		Addr:         addr,

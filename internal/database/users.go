@@ -16,6 +16,9 @@ type User struct {
 
 // CreateUser -
 func (c Client) CreateUser(email, password, name string, age int) (User, error) {
+	if err := userIsEligible(email, password, age); err != nil {
+		return User{}, err
+	}
 	db, err := c.readDB()
 	if err != nil {
 		return User{}, fmt.Errorf("readDB: %v", err)
@@ -94,6 +97,21 @@ func (c Client) DeleteUser(email string) error {
 	err = c.updateDB(db)
 	if err != nil {
 		return err
+	}
+	return nil
+}
+
+func userIsEligible(email, password string, age int) error {
+	if email == "" {
+		return fmt.Errorf("email can't be empty")
+	}
+
+	if password == "" {
+		return fmt.Errorf("password can't be empty")
+	}
+
+	if age < 18 {
+		return fmt.Errorf("age must be at least %d years old", 18)
 	}
 	return nil
 }
