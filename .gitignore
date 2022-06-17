@@ -4,3 +4,4 @@ db.json.*
 sandbox/*
 sandbox
 sandbox/
+*.json
