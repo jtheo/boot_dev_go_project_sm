@@ -1,4 +1,4 @@
-module github.com/jtheo/socialmedia
+module github.com/jtheo/boot_dev_go_project_sm
 
 go 1.18
 

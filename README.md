@@ -2,3 +2,4 @@
 
 Build a RESTful social media api in Golang using the standard library.
 
+Work on tests
