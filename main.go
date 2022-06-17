@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/jtheo/socialmedia/internal/http"
+	"github.com/jtheo/boot_dev_go_project_sm/internal/http"
 )
 
 func main() {

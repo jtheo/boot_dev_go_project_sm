@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/jtheo/socialmedia/internal/database"
+	"github.com/jtheo/boot_dev_go_project_sm/internal/database"
 )
 
 type errorBody struct {
